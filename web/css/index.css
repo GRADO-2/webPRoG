@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+.container {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.coordinates {
+    margin: 10px 0;
+}
+
+.coordinates input {
+    width: 60px;
+    margin: 0 5px;
+    padding: 5px;
+}
+
+.coordinates button {
+    padding: 5px 10px;
+    margin-left: 5px;
+}
+
+.graph-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+#area-chart {
+    border: 1px solid #ccc;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.area {
+    fill: rgba(0, 0, 255, 0.3);
+    stroke: blue;
+    stroke-width: 1;
+    stroke-dasharray: 5, 5;
+}

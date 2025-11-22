@@ -2,98 +2,7 @@
 <html>
 <head>
     <title>Result</title>
-    <style>
-        /* --- Estilos Globales y de Fondo (Tomados del CSS Principal) --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
-        }
-
-        body {
-            background: #121212; /* Fondo Oscuro */
-            color: #e0e0e0; /* Color de texto claro */
-            line-height: 1.6;
-            padding: 40px; /* Más padding para que no esté pegado a los bordes */
-        }
-
-        /* --- Estilo del Encabezado (H2) --- */
-        h2 {
-            color: #7a5cf0; /* Morado para títulos */
-            font-weight: 500;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 1.8em;
-        }
-
-        /* --- Estilo de la Tabla de Resultados --- */
-        table {
-            width: 50%; /* Ancho fijo para la tabla */
-            margin: 0 auto 30px auto; /* Centrar y añadir margen inferior */
-            border-collapse: collapse;
-            border: 1px solid rgba(255,255,255,0.1); /* Borde suave */
-            background: #1e1e1e; /* Fondo oscuro sutil */
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            border-radius: 8px;
-            overflow: hidden; /* Para que border-radius funcione en el borde */
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #333; /* Separador de filas */
-        }
-
-        th {
-            background: #121212; /* Fondo más oscuro para encabezados de columna */
-            color: #aaa; /* Color tenue para las etiquetas */
-            font-weight: 400;
-            width: 35%; /* Ancho de la columna de la etiqueta */
-        }
-
-        td {
-            color: #fff; /* Blanco brillante para los valores */
-            background: #1e1e1e;
-            font-weight: 500;
-        }
-
-        /* --- Estilo de la Caja de Error --- */
-        .error-box {
-            border: 1px solid #ff4757; /* Borde rojo del error */
-            padding: 15px;
-            background-color: rgba(255, 71, 87, 0.15); /* Fondo rojo claro */
-            color: #ff4757; /* Texto rojo */
-            margin: 0 auto 20px auto;
-            width: 50%;
-            border-radius: 6px;
-        }
-
-        .error-box h3 {
-            color: #ff4757;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        /* --- Estilo del Enlace "Back to form" --- */
-        a {
-            display: block;
-            width: 250px;
-            margin: 30px auto 0 auto;
-            text-align: center;
-            padding: 10px 20px;
-            border-radius: 6px;
-            background: #7a5cf0; /* Morado principal */
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        a:hover {
-            background: #6a4ce0;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/result.css">
 </head>
 <body>
 
@@ -102,7 +11,104 @@
     String errorMessage = (String) request.getAttribute("error_message");
 %>
 
-<h2>Resultados de la Verificación de Área</h2>
+<div style="display: flex; justify-content: space-between;">
+    <div style="flex: 1;">
+        <h2>Resultados de la Verificación de Área</h2>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <svg id="miSVG" width="300" height="300" viewBox="-150 -150 300 300">
+            <!-- Axes -->
+            <line x1="-150" y1="0" x2="150" y2="0" stroke="black" stroke-width="1"/>
+            <line x1="0" y1="-150" x2="0" y2="150" stroke="black" stroke-width="1"/>
+            
+            <!-- Axis labels -->
+            <text x="140" y="15" font-size="12" fill="black">X</text>
+            <text x="5" y="-140" font-size="12" fill="black">Y</text>
+            
+            <!-- Quadrant labels and boundaries -->
+            <!-- R boundaries -->
+            <text x="100" y="-10" font-size="10" fill="blue">R</text>
+            <text x="100" y="10" font-size="10" fill="blue">R</text>
+            <text x="-110" y="-10" font-size="10" fill="blue">R</text>
+            <text x="-110" y="10" font-size="10" fill="blue">R</text>
+            
+            <text x="10" y="110" font-size="10" fill="blue">R</text>
+            <text x="10" y="-110" font-size="10" fill="blue">R</text>
+            <text x="-15" y="110" font-size="10" fill="blue">R</text>
+            <text x="-15" y="-110" font-size="10" fill="blue">R</text>
+            
+            <!-- R/2 boundaries -->
+            <text x="50" y="-10" font-size="10" fill="red">R/2</text>
+            <text x="50" y="10" font-size="10" fill="red">R/2</text>
+            <text x="-60" y="-10" font-size="10" fill="red">R/2</text>
+            <text x="-60" y="10" font-size="10" fill="red">R/2</text>
+            
+            <text x="10" y="60" font-size="10" fill="red">R/2</text>
+            <text x="10" y="-60" font-size="10" fill="red">R/2</text>
+            <text x="-15" y="60" font-size="10" fill="red">R/2</text>
+            <text x="-15" y="-60" font-size="10" fill="red">R/2</text>
+            
+            <!-- Grid lines at R and R/2 positions -->
+            <!-- For R=5: lines at ±5 and ±2.5 (R/2) -->
+            <!-- Horizontal lines -->
+            <line x1="-150" y1="75" x2="150" y2="75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="-75" x2="150" y2="-75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="37.5" x2="150" y2="37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="-37.5" x2="150" y2="-37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            
+            <!-- Vertical lines -->
+            <line x1="75" y1="-150" x2="75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-75" y1="-150" x2="-75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="37.5" y1="-150" x2="37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-37.5" y1="-150" x2="-37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            
+            <!-- Area shapes will be drawn here -->
+            <g id="areaGroup">
+                <% if (errorMessage == null) { 
+                    String r = (String) request.getAttribute("r");
+                    if (r != null) {
+                        double rVal = Double.parseDouble(r);
+                        double s = 30; // scale
+                        
+                        // Rectángulo: x ≥ 0, y ≤ 0, ancho = r, alto = r/2
+                        String rect = "<rect class=\"area\" x=\"0\" y=\"0\" width=\""+(s * rVal)+"\" height=\""+(s * (rVal / 2))+"\" transform=\"translate(0, "+(-s * (rVal / 2))+")\"/>";
+                        
+                        // Triángulo: x ≤ 0, y ≥ 0, y ≤ r + 2x. Vértices: (-r/2, 0), (0, 0), (0, r)
+                        // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
+                        String tri = "<polygon class=\"area\" points=\""+(-s * (rVal / 2))+",0 0,0 0,"+(-s * rVal)+"\"/>";
+                        
+                        // Sector circular: x ≥ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 4)
+                        double radius = s * (rVal / 2);
+                        String arc = "<path class=\"area\" d=\"M "+radius+",0 A "+radius+","+radius+" 0 0,1 0,"+radius+" L 0,0 Z\" transform=\"translate(0, "+(-radius)+")\"/>";
+                        
+                        out.print(rect + tri + arc);
+                    }
+                } %>
+            </g>
+            <g id="pointsGroup"></g>
+            
+            <!-- Draw the result point -->
+            <% if (errorMessage == null) { 
+                String x = (String) request.getAttribute("x");
+                String y = (String) request.getAttribute("y");
+                String r = (String) request.getAttribute("r");
+                if (x != null && y != null && r != null) {
+                    double xVal = Double.parseDouble(x);
+                    double yVal = Double.parseDouble(y);
+                    double rVal = Double.parseDouble(r);
+                    double scale = 30; // 30px per unit
+                    double cx = xVal * scale;
+                    double cy = -yVal * scale; // Y is inverted in SVG
+                    String hitResult = (String) request.getAttribute("hit");
+                    String color = "IN".equals(hitResult) ? "green" : "red";
+            %>
+                <circle cx="<%= cx %>" cy="<%= cy %>" r="4" fill="<%= color %>" stroke="black" stroke-width="0.5"/>
+            <% 
+                }
+            } %>
+        </svg>
+    </div>
+</div>
 
 <% if (errorMessage != null) { %>
     <div class="error-box">

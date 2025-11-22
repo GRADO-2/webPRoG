@@ -224,8 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 4. SVG interacción (Click y Envío)
         svg.addEventListener("click", function(e){
-            if (!rInput || !validateRClick()) { // Validación de R antes de hacer click
-                alert("R must be set and valid (2 to 5) before clicking the graph.");
+            if (!rInput) {
+                alert("R must be set before clicking the graph.");
                 return;
             }
 
@@ -235,12 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const loc = pt.matrixTransform(svg.getScreenCTM().inverse());
             let realX = loc.x / s;
             const realY = -loc.y / s;
-
-            // Validación de rangos
-            if (realX < -5 || realX > 5 || realY < -5 || realY > 5) {
-                alert("Point is outside the visible range [-5, 5].");
-                return;
-            }
 
             // Establecer valores en los inputs del formulario
             xHiddenInput.value = realX.toFixed(2); // X desde el click
@@ -300,13 +294,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Función auxiliar para validar R solo para el click en SVG
-    function validateRClick() {
-        if (!rInput) return false;
-        const rStr = rInput.value.trim().replace(',', '.');
-        const rNum = parseFloat(rStr);
-        return !isNaN(rNum) && rNum >= 2 && rNum <= 5;
-    }
 
     // Al cargar la página, intenta dibujar los puntos del historial (si R está en el input)
     renderHistory();

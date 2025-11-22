@@ -6,21 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Check the position of your point</title>
-    <link rel="stylesheet" href="./styles.css">
-    <style>
-        /* Estilos CSS (manteniendo los tuyos para el diseño) */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .header { text-align: center; }
-        .content { display: flex; justify-content: space-between; }
-        .image-container { flex: 1; text-align: center; }
-        .hist-container { flex: 1; margin-left: 20px; }
-        .form-group { margin-top: 20px; }
-        svg { border: 1px solid #ddd; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        #coordsPloter { position: absolute; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; display: none; font-size: 12px; pointer-events: none; }
-        .area { fill: rgba(26, 115, 232, 0.5); stroke: #1a73e8; stroke-width: 1; }
-        .history-table { width: 100%; border-collapse: collapse; }
-        .history-table th, .history-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/index.css">
 </head>
 <body>
 
@@ -37,8 +23,52 @@
         <div class="image-container">
             <div id="coordsPloter"></div>
                 <svg id="miSVG" width="300" height="300" viewBox="-150 -150 300 300">
+                    <!-- Axes -->
                     <line x1="-150" y1="0" x2="150" y2="0" stroke="black" stroke-width="1"/>
                     <line x1="0" y1="-150" x2="0" y2="150" stroke="black" stroke-width="1"/>
+                    
+                    <!-- Axis labels -->
+                    <text x="140" y="15" font-size="12" fill="black">X</text>
+                    <text x="5" y="-140" font-size="12" fill="black">Y</text>
+                    
+                    <!-- Quadrant labels and boundaries -->
+                    <!-- R boundaries -->
+                    <text x="100" y="-10" font-size="10" fill="blue">R</text>
+                    <text x="100" y="10" font-size="10" fill="blue">R</text>
+                    <text x="-110" y="-10" font-size="10" fill="blue">R</text>
+                    <text x="-110" y="10" font-size="10" fill="blue">R</text>
+                    
+                    <text x="10" y="110" font-size="10" fill="blue">R</text>
+                    <text x="10" y="-110" font-size="10" fill="blue">R</text>
+                    <text x="-15" y="110" font-size="10" fill="blue">R</text>
+                    <text x="-15" y="-110" font-size="10" fill="blue">R</text>
+                    
+                    <!-- R/2 boundaries -->
+                    <text x="50" y="-10" font-size="10" fill="red">R/2</text>
+                    <text x="50" y="10" font-size="10" fill="red">R/2</text>
+                    <text x="-60" y="-10" font-size="10" fill="red">R/2</text>
+                    <text x="-60" y="10" font-size="10" fill="red">R/2</text>
+                    
+                    <text x="10" y="60" font-size="10" fill="red">R/2</text>
+                    <text x="10" y="-60" font-size="10" fill="red">R/2</text>
+                    <text x="-15" y="60" font-size="10" fill="red">R/2</text>
+                    <text x="-15" y="-60" font-size="10" fill="red">R/2</text>
+                    
+                    <!-- Grid lines at R and R/2 positions -->
+                    <!-- For R=5: lines at ±5 and ±2.5 (R/2) -->
+                    <!-- Horizontal lines -->
+                    <line x1="-150" y1="75" x2="150" y2="75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="-150" y1="-75" x2="150" y2="-75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="-150" y1="37.5" x2="150" y2="37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="-150" y1="-37.5" x2="150" y2="-37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    
+                    <!-- Vertical lines -->
+                    <line x1="75" y1="-150" x2="75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="-75" y1="-150" x2="-75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="37.5" y1="-150" x2="37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    <line x1="-37.5" y1="-150" x2="-37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                    
+                    <!-- Area shapes will be drawn here -->
                     <g id="areaGroup"></g>
                     <g id="pointsGroup"></g>
                 </svg>
