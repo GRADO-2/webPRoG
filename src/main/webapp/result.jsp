@@ -77,15 +77,63 @@
                         // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
                         String tri = "<polygon class=\"area\" points=\""+(-s * (rVal / 2))+",0 0,0 0,"+(-s * rVal)+"\"/>";
                         
-                        // Sector circular: x ≥ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 4)
+                        // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
                         double radius = s * (rVal / 2);
-                        String arc = "<path class=\"area\" d=\"M "+radius+",0 A "+radius+","+radius+" 0 0,1 0,"+radius+" L 0,0 Z\" transform=\"translate(0, "+(-radius)+")\"/>";
+                        String arc = "<path class=\"area\" d=\"M "+(-radius)+",0 A "+radius+","+radius+" 0 0,1 0,"+(-radius)+" L 0,0 Z\"/>";
                         
                         out.print(rect + tri + arc);
                     }
                 } %>
             </g>
             <g id="pointsGroup"></g>
+            
+            <!-- Draw all historical points using scrip.js functions -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Usar la misma lógica de renderizado de scrip.js
+                    renderHistoryFromStorage();
+                });
+                
+                // Función para renderizar puntos desde almacenamiento
+                function renderHistoryFromStorage() {
+                    const pointsGroup = document.getElementById('pointsGroup');
+                    if (pointsGroup) {
+                        pointsGroup.innerHTML = '';
+                        
+                        // Intenta obtener datos de sessionStorage, si no de localStorage
+                        let histData = sessionStorage.getItem('histData');
+                        if (!histData) {
+                            histData = localStorage.getItem('histData');
+                        }
+                        
+                        if (histData) {
+                            const history = JSON.parse(histData);
+                            const scale = 30; // 30px por unidad
+                            
+                            history.forEach(function(item) {
+                                const dot = item.dot;
+                                const ans = item.ans;
+                                
+                                const xVal = parseFloat(dot.x);
+                                const yVal = parseFloat(dot.y);
+                                const cx = xVal * scale;
+                                const cy = -yVal * scale; // Y está invertido en SVG
+                                const color = ans.result === 'IN' ? 'green' : 'red';
+                                
+                                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                                circle.setAttribute('cx', cx);
+                                circle.setAttribute('cy', cy);
+                                circle.setAttribute('r', 4);
+                                circle.setAttribute('fill', color);
+                                circle.setAttribute('stroke', 'black');
+                                circle.setAttribute('stroke-width', '0.5');
+                                
+                                pointsGroup.appendChild(circle);
+                            });
+                        }
+                    }
+                }
+            </script>
             
             <!-- Draw the result point -->
             <% if (errorMessage == null) { 
@@ -157,5 +205,6 @@
 <br>
 <a href="controllerS">Back to form</a>
 
+<script src="./scrip.js"></script>
 </body>
 </html>

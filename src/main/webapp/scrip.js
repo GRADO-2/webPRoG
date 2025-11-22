@@ -1,6 +1,20 @@
 let historyData = JSON.parse(localStorage.getItem("histData")) || [];
 let currentR = 5; // Valor inicial de R
 
+// Sincroniza sessionStorage con localStorage al cargar la página
+function syncStorage() {
+    // Copia los datos de localStorage a sessionStorage para persistencia
+    const localStorageData = JSON.parse(localStorage.getItem("histData")) || [];
+    sessionStorage.setItem("histData", JSON.stringify(localStorageData));
+}
+
+// Almacena los puntos en localStorage y sessionStorage
+function savePointToStorage(dot, ans) {
+    historyData.push({ dot, ans });
+    localStorage.setItem("histData", JSON.stringify(historyData));
+    sessionStorage.setItem("histData", JSON.stringify(historyData));
+}
+
 // Referencias a elementos clave del DOM
 const form = document.getElementById("form");
 const rInput = document.getElementById('r_input');
@@ -51,20 +65,14 @@ function renderHistory() {
     const pointsGroup = document.getElementById("pointsGroup");
     if (pointsGroup) pointsGroup.innerHTML = "";
 
-    // Si el historial está en localStorage, solo se puede dibujar si R es conocido
-    if (rInput && rInput.value) {
-        const currentRVal = parseFloat(rInput.value.replace(',', '.'));
-        historyData.forEach(({ dot, ans }) => {
-            if (dot.r === String(currentRVal)) { // Dibuja solo si el R coincide con el actual
-                 drawPoint(dot.x, dot.y, ans.result);
-            }
-        });
-    }
+    // Dibuja todos los puntos del historial almacenados en localStorage
+    historyData.forEach(({ dot, ans }) => {
+         drawPoint(dot.x, dot.y, ans.result);
+    });
 }
 
 function addRowHist(dot, ans) {
-    historyData.push({ dot, ans });
-    localStorage.setItem("histData", JSON.stringify(historyData));
+    savePointToStorage(dot, ans);
     // En el MVC tradicional, la tabla se actualiza con la recarga de la página,
     // pero mantenemos el dibujo de puntos en el SVG.
     // drawPoint(dot.x, dot.y, ans.result); // Se llama desde el evento submit/click
@@ -73,6 +81,7 @@ function addRowHist(dot, ans) {
 document.getElementById("flushHist")?.addEventListener("click", () => {
     historyData = [];
     localStorage.removeItem("histData");
+    sessionStorage.removeItem("histData");
 
     // En el contexto de Servlets/JSP, es mejor enviar una petición al servidor para limpiar la SESIÓN/CONTEXTO.
     const clearForm = document.createElement('form');
@@ -144,11 +153,10 @@ function updateArea(r) {
     // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
     const tri = `<polygon class="area" points="${-s * (rNum / 2)},0 0,0 0,${-s * rNum}" />`;
 
-    // Sector circular: x ≥ 0, y ≥ 0, x² + y² ≤ (r/2)²
-    // NOTA: El enunciado original tiene (x ≥ 0, y ≤ 0, x² + y² ≤ (r/2)²). Usaré el cuadrante 4 (x+, y-)
+    // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
     const radius = s * (rNum / 2);
     // M x,0 A r,r 0 0,1 0,-y L 0,0 Z
-    const arc = `<path class="area" d="M ${radius},0 A ${radius},${radius} 0 0,1 0,${radius} L 0,0 Z" transform="translate(0, ${-radius})" />`;
+    const arc = `<path class="area" d="M ${-radius},0 A ${radius},${radius} 0 0,1 0,${-radius} L 0,0 Z" />`;
 
 
     areaGroup.innerHTML = rect + tri + arc;
@@ -295,6 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    // Al cargar la página, intenta dibujar los puntos del historial (si R está en el input)
+    // Al cargar la página, sincroniza el almacenamiento y dibuja los puntos del historial
+    syncStorage();
     renderHistory();
 });
