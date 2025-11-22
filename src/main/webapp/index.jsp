@@ -1,10 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.List, org.example.utilities.PointResult" %>
 
+<%
+    // Prevent caching to avoid page reload when going back
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+%>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Check the position of your point</title>
     <link rel="stylesheet" type="text/css" href="css/index.css">
 </head>
@@ -32,27 +42,33 @@
                     <text x="5" y="-140" font-size="12" fill="black">Y</text>
                     
                     <!-- Quadrant labels and boundaries -->
-                    <!-- R boundaries -->
-                    <text x="100" y="-10" font-size="10" fill="blue">R</text>
-                    <text x="100" y="10" font-size="10" fill="blue">R</text>
-                    <text x="-110" y="-10" font-size="10" fill="blue">R</text>
-                    <text x="-110" y="10" font-size="10" fill="blue">R</text>
-                    
-                    <text x="10" y="110" font-size="10" fill="blue">R</text>
-                    <text x="10" y="-110" font-size="10" fill="blue">R</text>
-                    <text x="-15" y="110" font-size="10" fill="blue">R</text>
-                    <text x="-15" y="-110" font-size="10" fill="blue">R</text>
+                    <!-- R boundaries - dynamically positioned based on current R value -->
+                    <g id="rLabels">
+                        <!-- Horizontal R labels -->
+                        <text x="75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="-75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="-75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <!-- Vertical R labels -->
+                        <text x="5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="-5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
+                        <text x="-5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
+                    </g>
                     
                     <!-- R/2 boundaries -->
-                    <text x="50" y="-10" font-size="10" fill="red">R/2</text>
-                    <text x="50" y="10" font-size="10" fill="red">R/2</text>
-                    <text x="-60" y="-10" font-size="10" fill="red">R/2</text>
-                    <text x="-60" y="10" font-size="10" fill="red">R/2</text>
-                    
-                    <text x="10" y="60" font-size="10" fill="red">R/2</text>
-                    <text x="10" y="-60" font-size="10" fill="red">R/2</text>
-                    <text x="-15" y="60" font-size="10" fill="red">R/2</text>
-                    <text x="-15" y="-60" font-size="10" fill="red">R/2</text>
+                    <g id="r2Labels">
+                        <!-- Horizontal R/2 labels -->
+                        <text x="37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="-37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="-37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <!-- Vertical R/2 labels -->
+                        <text x="5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="-5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                        <text x="-5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                    </g>
                     
                     <!-- Grid lines at R and R/2 positions -->
                     <!-- For R=5: lines at ±5 and ±2.5 (R/2) -->

@@ -177,6 +177,65 @@ function drawPoint(x, y, result) {
     document.getElementById("pointsGroup")?.appendChild(circle);
 }
 
+function updateRLabels(r) {
+    const rLabels = document.getElementById("rLabels");
+    const r2Labels = document.getElementById("r2Labels");
+    
+    if (!rLabels || !r2Labels) return;
+    
+    const rNum = parseFloat(r);
+    if (isNaN(rNum) || rNum < 2 || rNum > 5) return;
+    
+    // Update R labels positions
+    const rScaled = rNum * 15; // 30px per unit, so r * 30 / 2 = r * 15
+    const r2Scaled = rNum * 15 / 2; // (r/2) * 30 / 2 = r * 15 / 2
+    
+    // Update horizontal R labels
+    const rLabelsTexts = rLabels.querySelectorAll('text');
+    if (rLabelsTexts.length >= 8) {
+        rLabelsTexts[0].setAttribute('x', rScaled); // Right positive
+        rLabelsTexts[1].setAttribute('x', -rScaled); // Left negative
+        rLabelsTexts[2].setAttribute('x', rScaled); // Right positive
+        rLabelsTexts[3].setAttribute('x', -rScaled); // Left negative
+        
+        // Update vertical R labels
+        rLabelsTexts[4].setAttribute('y', rScaled); // Bottom positive
+        rLabelsTexts[5].setAttribute('y', -rScaled); // Top negative
+        rLabelsTexts[6].setAttribute('y', rScaled); // Bottom positive
+        rLabelsTexts[7].setAttribute('y', -rScaled); // Top negative
+    }
+    
+    // Update R/2 labels positions
+    const r2LabelsTexts = r2Labels.querySelectorAll('text');
+    if (r2LabelsTexts.length >= 8) {
+        r2LabelsTexts[0].setAttribute('x', r2Scaled); // Right positive
+        r2LabelsTexts[1].setAttribute('x', -r2Scaled); // Left negative
+        r2LabelsTexts[2].setAttribute('x', r2Scaled); // Right positive
+        r2LabelsTexts[3].setAttribute('x', -r2Scaled); // Left negative
+        
+        // Update vertical R/2 labels
+        r2LabelsTexts[4].setAttribute('y', r2Scaled); // Bottom positive
+        r2LabelsTexts[5].setAttribute('y', -r2Scaled); // Top negative
+        r2LabelsTexts[6].setAttribute('y', r2Scaled); // Bottom positive
+        r2LabelsTexts[7].setAttribute('y', -r2Scaled); // Top negative
+    }
+}
+
+// Function to redraw points based on current R value
+function redrawPointsWithCurrentR() {
+    const pointsGroup = document.getElementById("pointsGroup");
+    if (pointsGroup) {
+        pointsGroup.innerHTML = ""; // Clear existing points
+        
+        // Redraw all points from history that are within current R
+        historyData.forEach(({ dot, ans }) => {
+            // Check if the point should be visible based on current R
+            // For now, we'll draw all points, but we could add filtering logic here
+            drawPoint(dot.x, dot.y, ans.result);
+        });
+    }
+}
+
 // ===== MANEJO DE EVENTOS =====
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -192,6 +251,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!isNaN(num) && num >= 2 && num <= 5) {
                 currentR = num;
                 updateArea(currentR);
+                updateRLabels(currentR);
                 rInput.classList.remove("error");
             } else {
                 showError("rad", "R ∈ [2, 5]");
@@ -277,7 +337,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Actualizar R global y visual
             currentR = parseFloat(validated.rad);
-            if (rInput) rInput.value = validated.rad;
+            if (rInput) {
+                rInput.value = validated.rad;
+                updateRLabels(currentR);
+            }
 
             // Poner los datos validados de vuelta en el formulario antes de enviar
             xHiddenInput.value = validated.x;
@@ -296,6 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (rInput) {
                 rInput.value = currentR;
                 updateArea(currentR);
+                updateRLabels(currentR);
             }
             // Limpiar el campo oculto X
             if (xHiddenInput) xHiddenInput.value = '';
