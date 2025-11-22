@@ -191,7 +191,7 @@
         // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (3rd quadrant against clock)
         const radius = <%= s %> * (<%= rNum %> / 2);
         // M 0,0 L 0,-r A r,r 0 0,1 -r,0 Z (draw arc in 3rd quadrant)
-        const arc = '<path class="area" d="M 0,0 L 0,' + (-radius) + ' A ' + radius + ',' + radius + ' 0 0,1 ' + (-radius) + ',0 Z" />';
+        const arc = '<path class="area" d="M 0,0 L 0,' + radius + ' A ' + radius + ',' + radius + ' 0 0,1 ' + (-radius) + ',0 Z" transform="translate(0, ' + (-radius) + ')" />';
 
         resultAreaGroup.innerHTML = rect + tri + arc;
     }
@@ -202,7 +202,7 @@
 %>
 
 <br>
-<a class="back-link" href="index.jsp">Back to form</a>
+<a class="back-link" href="controllerS">Back to form</a>
 
 </body>
 </html>

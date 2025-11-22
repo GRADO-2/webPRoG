@@ -138,18 +138,16 @@ function updateArea(r) {
     }
 
     // Rectángulo: x ≥ 0, y ≤ 0, ancho = r, alto = r/2
-    const rect = `<rect class="area" x="0" y="${0}" width="${s * rNum}" height="${s * (rNum / 2)}" transform="translate(0, ${-s * (rNum / 2)})"/>`;
+    const rect = `<rect class="area" x="0" y="${-s * rNum / 2}" width="${s * rNum}" height="${s * rNum / 2}" />`;
 
     // Triángulo: x ≤ 0, y ≥ 0, y ≤ r + 2x. Vértices: (-r/2, 0), (0, 0), (0, r)
     // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
     const tri = `<polygon class="area" points="${-s * (rNum / 2)},0 0,0 0,${-s * rNum}" />`;
 
-    // Sector circular: x ≥ 0, y ≥ 0, x² + y² ≤ (r/2)²
-    // NOTA: El enunciado original tiene (x ≥ 0, y ≤ 0, x² + y² ≤ (r/2)²). Usaré el cuadrante 4 (x+, y-)
+    // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (3rd quadrant against clock)
     const radius = s * (rNum / 2);
-    // M x,0 A r,r 0 0,1 0,-y L 0,0 Z
-    const arc = `<path class="area" d="M ${radius},0 A ${radius},${radius} 0 0,1 0,${radius} L 0,0 Z" transform="translate(0, ${-radius})" />`;
-
+    // M 0,0 L 0,-r A r,r 0 0,1 -r,0 Z (draw arc in 3rd quadrant)
+    const arc = `<path class="area" d="M 0,0 L 0,${-radius} A ${radius},${radius} 0 0,1 ${-radius},0 Z" />`;
 
     areaGroup.innerHTML = rect + tri + arc;
 }
@@ -174,6 +172,11 @@ function drawPoint(x, y, result) {
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Inicializar R y el área
     if (rInput) {
+        // Intentar obtener el valor de R del input actual o usar el valor por defecto
+        const currentRValue = rInput.value ? parseFloat(rInput.value.trim().replace(',', '.')) : currentR;
+        if (!isNaN(currentRValue) && currentRValue >= 2 && currentRValue <= 5) {
+            currentR = currentRValue;
+        }
         rInput.value = currentR;
         updateArea(currentR);
 
@@ -310,4 +313,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Al cargar la página, intenta dibujar los puntos del historial (si R está en el input)
     renderHistory();
+    
+    // Prevenir la recarga al regresar desde otra pestaña
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            // Si la página se restaura desde el caché del navegador, actualizamos el área
+            if (rInput && rInput.value) {
+                const rValue = parseFloat(rInput.value.trim().replace(',', '.'));
+                if (!isNaN(rValue) && rValue >= 2 && rValue <= 5) {
+                    currentR = rValue;
+                    updateArea(currentR);
+                }
+            }
+            // Redibujar los puntos del historial
+            renderHistory();
+        }
+    });
 });

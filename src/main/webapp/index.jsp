@@ -6,21 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Check the position of your point</title>
-    <link rel="stylesheet" href="./styles.css">
-    <style>
-        /* Estilos CSS (manteniendo los tuyos para el diseño) */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .header { text-align: center; }
-        .content { display: flex; justify-content: space-between; }
-        .image-container { flex: 1; text-align: center; }
-        .hist-container { flex: 1; margin-left: 20px; }
-        .form-group { margin-top: 20px; }
-        svg { border: 1px solid #ddd; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        #coordsPloter { position: absolute; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; display: none; font-size: 12px; pointer-events: none; }
-        .area { fill: rgba(26, 115, 232, 0.5); stroke: #1a73e8; stroke-width: 1; }
-        .history-table { width: 100%; border-collapse: collapse; }
-        .history-table th, .history-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-    </style>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
 
