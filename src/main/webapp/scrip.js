@@ -104,10 +104,27 @@ function validateAndFormat(data) {
     const validX = new Set(["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"]);
     clearErrors();
 
-    // 1. Validar X
-    if (!data.x || !validX.has(data.x)) {
-        showError("x", "X must be selected from buttons.");
+    // 1. Validar X - Allow decimal values that come from SVG clicks
+    let xValue = data.x;
+    if (!xValue) {
+        showError("x", "X must be selected or clicked on graph.");
         return null;
+    }
+    
+    // Check if xValue is a decimal (from SVG click) or an integer (from buttons)
+    const xNum = parseFloat(xValue);
+    if (isNaN(xNum)) {
+        showError("x", "X must be a valid number.");
+        return null;
+    }
+    
+    // If it's not one of the button values, check if it's a valid decimal
+    if (!validX.has(xValue.toString())) {
+        // It's from SVG click, allow decimal values but check range
+        if (xNum < -4 || xNum > 4) {
+            showError("x", "X must be in range [-4, 4].");
+            return null;
+        }
     }
 
     // 2. Validar Y
@@ -128,7 +145,7 @@ function validateAndFormat(data) {
         return null;
     }
 
-    return { x: data.x, y: yNum.toString(), rad: rNum.toString() };
+    return { x: xNum.toString(), y: yNum.toString(), rad: rNum.toString() };
 }
 
 // ===== SVG Y ÁREA =====
@@ -146,17 +163,16 @@ function updateArea(r) {
         return;
     }
 
-    // Rectángulo: x ≥ 0, y ≤ 0, ancho = r, alto = r/2
-    const rect = `<rect class="area" x="0" y="${0}" width="${s * rNum}" height="${s * (rNum / 2)}" transform="translate(0, ${-s * (rNum / 2)})"/>`;
+    // Cuadrado en primer cuadrante: x ∈ [0, r], y ∈ [-r/2, 0]
+    const rect = `<rect class="area" x="0" y="${-s * (rNum / 2)}" width="${s * rNum}" height="${s * (rNum / 2)}" />`;
 
-    // Triángulo: x ≤ 0, y ≥ 0, y ≤ r + 2x. Vértices: (-r/2, 0), (0, 0), (0, r)
-    // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
-    const tri = `<polygon class="area" points="${-s * (rNum / 2)},0 0,0 0,${-s * rNum}" />`;
+    // Triángulo en segundo cuadrante: vértices (0, 0), (0, -r), (-r/2, 0)
+    const tri = `<polygon class="area" points="0,0 0,${-s * rNum} ${-s * (rNum / 2)},0" />`;
 
-    // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
+    // Semicírculo en tercer cuadrante: radio r/2, arco en tercer cuadrante (cuarto de círculo inferior izquierdo)
     const radius = s * (rNum / 2);
-    // M 0,0 A r,r 0 0,1 -r,0 L 0,0 Z (This draws a quarter circle in the 3rd quadrant from (0,0) to (-r,0))
-    const arc = `<path class="area" d="M 0,0 A ${radius},${radius} 0 0,1 ${-radius},0 L 0,0 Z" />`;
+    // Dibuja un cuarto de círculo desde (0, -r/2) a (-r/2, 0) pasando por (-r/2, -r/2) - arco en tercer cuadrante
+    const arc = `<path class="area" d="M 0,${-radius} A ${radius},${radius} 0 0,1 ${-radius},0 L 0,0 Z" transform="translate(0, 0)"/>`;
 
 
     areaGroup.innerHTML = rect + tri + arc;
@@ -236,9 +252,61 @@ function redrawPointsWithCurrentR() {
     }
 }
 
+// ===== THEME TOGGLE =====
+
+function setTheme(themeName) {
+    localStorage.setItem('theme', themeName);
+    document.documentElement.setAttribute('data-theme', themeName);
+}
+
+function toggleTheme() {
+    if (localStorage.getItem('theme') === 'light') {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+}
+
+// Initialize theme on page load
+function initializeTheme() {
+    if (localStorage.getItem('theme') === 'light') {
+        setTheme('light');
+    } else {
+        setTheme('dark');
+    }
+}
+
 // ===== MANEJO DE EVENTOS =====
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Initialize theme
+    initializeTheme();
+    
+    // Add theme toggle button if it doesn't exist
+    const header = document.querySelector('.header') || document.querySelector('#student-header');
+    if (header) {
+        const themeToggle = document.createElement('button');
+        themeToggle.type = 'button';
+        themeToggle.textContent = localStorage.getItem('theme') === 'light' ? '🌙 Dark Theme' : '☀️ Light Theme';
+        themeToggle.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        `;
+        themeToggle.addEventListener('click', () => {
+            toggleTheme();
+            themeToggle.textContent = localStorage.getItem('theme') === 'light' ? '🌙 Dark Theme' : '☀️ Light Theme';
+        });
+        header.style.position = 'relative';
+        header.appendChild(themeToggle);
+    }
     // 1. Inicializar R y el área
     if (rInput) {
         rInput.value = currentR;
