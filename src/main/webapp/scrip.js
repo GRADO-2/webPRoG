@@ -155,8 +155,8 @@ function updateArea(r) {
 
     // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
     const radius = s * (rNum / 2);
-    // M x,0 A r,r 0 0,1 0,-y L 0,0 Z
-    const arc = `<path class="area" d="M ${-radius},0 A ${radius},${radius} 0 0,1 0,${-radius} L 0,0 Z" />`;
+    // M 0,0 A r,r 0 0,1 -r,0 L 0,0 Z (This draws a quarter circle in the 3rd quadrant from (0,0) to (-r,0))
+    const arc = `<path class="area" d="M 0,0 A ${radius},${radius} 0 0,1 ${-radius},0 L 0,0 Z" />`;
 
 
     areaGroup.innerHTML = rect + tri + arc;
@@ -310,6 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Forzar el submit del formulario
             form.method = "GET"; // o POST, según tu ControllerServlet
+            form.action = "controllerS?from_graph=true"; // Add parameter to indicate graph click
             form.submit();
         });
     }
@@ -349,6 +350,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // ⚠️ Envío FINAL: El navegador navega a controllerS
             form.method = "GET"; // Asegura el método de envío
+            form.action = "controllerS?from_graph=false"; // Add parameter to indicate form submission (with validation)
             form.submit();
         });
 

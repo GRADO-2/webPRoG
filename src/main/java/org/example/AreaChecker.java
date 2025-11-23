@@ -39,6 +39,7 @@ public class AreaChecker extends HttpServlet {
         String xParam = req.getParameter("x");
         String yParam = req.getParameter("y");
         String rParam = req.getParameter("rad");
+        String fromGraph = req.getParameter("from_graph"); // Check if request is from graph
 
         try {
             if (xParam == null || yParam == null || rParam == null || xParam.isEmpty() || yParam.isEmpty() || rParam.isEmpty()) {
@@ -50,7 +51,12 @@ public class AreaChecker extends HttpServlet {
             BigDecimal r = new BigDecimal(rParam);
 
             VerifyHit verifyHit = new VerifyHit();
-            verifyHit.validate(x, y, r);
+            
+            // Skip validation if request comes from graph click
+            if (!"true".equals(fromGraph)) {
+                verifyHit.validate(x, y, r);
+            }
+            
             long time_end = System.nanoTime();
             String execTime = String.format("%.3f", (time_end - time_start) / 1_000_000.0);
             boolean hit = verifyHit.pointchecker(x, y, r);

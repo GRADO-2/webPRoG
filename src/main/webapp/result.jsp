@@ -96,7 +96,7 @@
 
                         // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
                         double radius = s * (rVal / 2);
-                        String arc = "<path class=\"area\" d=\"M "+(-radius)+",0 A "+radius+","+radius+" 0 0,1 0,"+(-radius)+" L 0,0 Z\"/>";
+                        String arc = "<path class=\"area\" d=\"M 0,0 A "+radius+","+radius+" 0 0,1 "+(-radius)+",0 L 0,0 Z\"/>";
 
                         out.print(rect + tri + arc);
                     }
