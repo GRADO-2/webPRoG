@@ -330,8 +330,8 @@ th, td {
 }
 
 .area {
-    fill: rgba(0, 0, 255, 0.3);
-    stroke: blue;
+    fill: rgba(122, 92, 240, 0.3);
+    stroke: #a060f0;
     stroke-width: 1;
     stroke-dasharray: 5, 5;
 }

@@ -5,15 +5,17 @@ body {
     align-items: center;
     min-height: 90vh;
     margin: 0;
-    background-color: #f0f0f0;
+    background: linear-gradient(135deg, #2c0a4d, #1a062e);
+    color: #e0d6f0;
 }
 
 .container {
     text-align: center;
-    background: white;
+    background: rgba(30, 30, 46, 0.8);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    border: 1px solid rgba(180, 120, 220, 0.3);
 }
 
 .graph-container {
@@ -22,8 +24,34 @@ body {
     justify-content: center;
 }
 z
-#area-chart {
-    border: 1px solid #ccc;
+.result-table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 80%;
+    background: rgba(30, 30, 46, 0.8);
+    border: 1px solid rgba(180, 120, 220, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.result-table, th, td {
+    border: 1px solid rgba(180, 120, 220, 0.3);
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    color: #e0d6f0;
+}
+
+th {
+    background: rgba(90, 40, 130, 0.8);
+    color: #c0a0f0;
+    font-weight: 500;
+}
+
+td {
+    background: rgba(80, 30, 110, 0.6);
 }
 
 .result-info {
@@ -34,15 +62,15 @@ z
 }
 
 .hit {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background-color: rgba(21, 87, 36, 0.6);
+    color: #50fa7b;
+    border: 1px solid rgba(96, 176, 64, 0.5);
 }
 
 .miss {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background-color: rgba(114, 28, 36, 0.6);
+    color: #ffb86c;
+    border: 1px solid rgba(181, 96, 99, 0.5);
 }
 
 .point-info {
@@ -51,8 +79,8 @@ z
 }
 
 .area {
-    fill: rgba(0, 0, 255, 0.3);
-    stroke: blue;
+    fill: rgba(122, 92, 240, 0.3);
+    stroke: #a060f0;
     stroke-width: 1;
     stroke-dasharray: 5, 5;
 }

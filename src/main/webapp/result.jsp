@@ -29,55 +29,55 @@
     <div style="flex: 1; text-align: center;">
         <svg id="miSVG" width="300" height="300" viewBox="-150 -150 300 300">
             <!-- Axes -->
-            <line x1="-150" y1="0" x2="150" y2="0" stroke="black" stroke-width="1"/>
-            <line x1="0" y1="-150" x2="0" y2="150" stroke="black" stroke-width="1"/>
+            <line x1="-150" y1="0" x2="150" y2="0" stroke="#e0d6f0" stroke-width="1"/>
+            <line x1="0" y1="-150" x2="0" y2="150" stroke="#e0d6f0" stroke-width="1"/>
 
             <!-- Axis labels -->
-            <text x="140" y="15" font-size="12" fill="black">X</text>
-            <text x="5" y="-140" font-size="12" fill="black">Y</text>
+            <text x="140" y="15" font-size="12" fill="#e0d6f0">X</text>
+            <text x="5" y="-140" font-size="12" fill="#e0d6f0">Y</text>
 
             <!-- Quadrant labels and boundaries -->
             <!-- R boundaries - dynamically positioned based on current R value -->
             <g id="rLabels">
                 <!-- Horizontal R labels -->
-                <text x="75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
+                <text x="75" y="-5" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="-75" y="-5" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="75" y="15" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="-75" y="15" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
                 <!-- Vertical R labels -->
-                <text x="5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
+                <text x="5" y="75" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="5" y="-75" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="-5" y="75" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
+                <text x="-5" y="-75" font-size="10" fill="#a060f0" text-anchor="middle">R</text>
             </g>
 
             <!-- R/2 boundaries -->
             <g id="r2Labels">
                 <!-- Horizontal R/2 labels -->
-                <text x="37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                <text x="37.5" y="-5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="-37.5" y="-5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="37.5" y="15" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="-37.5" y="15" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
                 <!-- Vertical R/2 labels -->
-                <text x="5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
+                <text x="5" y="37.5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="5" y="-37.5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="-5" y="37.5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
+                <text x="-5" y="-37.5" font-size="10" fill="#ff6b9d" text-anchor="middle">R/2</text>
             </g>
 
             <!-- Grid lines at R and R/2 positions -->
             <!-- For R=5: lines at ±5 and ±2.5 (R/2) -->
             <!-- Horizontal lines -->
-            <line x1="-150" y1="75" x2="150" y2="75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="-75" x2="150" y2="-75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="37.5" x2="150" y2="37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="-37.5" x2="150" y2="-37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="75" x2="150" y2="75" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="-75" x2="150" y2="-75" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="37.5" x2="150" y2="37.5" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-150" y1="-37.5" x2="150" y2="-37.5" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
 
             <!-- Vertical lines -->
-            <line x1="75" y1="-150" x2="75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-75" y1="-150" x2="-75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="37.5" y1="-150" x2="37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-37.5" y1="-150" x2="-37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="75" y1="-150" x2="75" y2="150" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-75" y1="-150" x2="-75" y2="150" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="37.5" y1="-150" x2="37.5" y2="150" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
+            <line x1="-37.5" y1="-150" x2="-37.5" y2="150" stroke="#a060f0" stroke-dasharray="2,2" stroke-width="0.5"/>
 
             <!-- Area shapes will be drawn here -->
             <g id="areaGroup">
@@ -182,7 +182,7 @@
     </div>
 <% } %>
 
-<table>
+<table class="result-table">
     <tr><th>X Coordinate</th><td><%= request.getAttribute("x") %></td></tr>
     <tr><th>Y Coordinate</th><td><%= request.getAttribute("y") %></td></tr>
     <tr><th>R Parameter</th><td><%= request.getAttribute("r") %></td></tr>

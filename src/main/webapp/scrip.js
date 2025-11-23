@@ -252,61 +252,9 @@ function redrawPointsWithCurrentR() {
     }
 }
 
-// ===== THEME TOGGLE =====
-
-function setTheme(themeName) {
-    localStorage.setItem('theme', themeName);
-    document.documentElement.setAttribute('data-theme', themeName);
-}
-
-function toggleTheme() {
-    if (localStorage.getItem('theme') === 'light') {
-        setTheme('dark');
-    } else {
-        setTheme('light');
-    }
-}
-
-// Initialize theme on page load
-function initializeTheme() {
-    if (localStorage.getItem('theme') === 'light') {
-        setTheme('light');
-    } else {
-        setTheme('dark');
-    }
-}
-
 // ===== MANEJO DE EVENTOS =====
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Initialize theme
-    initializeTheme();
-    
-    // Add theme toggle button if it doesn't exist
-    const header = document.querySelector('.header') || document.querySelector('#student-header');
-    if (header) {
-        const themeToggle = document.createElement('button');
-        themeToggle.type = 'button';
-        themeToggle.textContent = localStorage.getItem('theme') === 'light' ? '🌙 Dark Theme' : '☀️ Light Theme';
-        themeToggle.style.cssText = `
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 12px;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-        `;
-        themeToggle.addEventListener('click', () => {
-            toggleTheme();
-            themeToggle.textContent = localStorage.getItem('theme') === 'light' ? '🌙 Dark Theme' : '☀️ Light Theme';
-        });
-        header.style.position = 'relative';
-        header.appendChild(themeToggle);
-    }
     // 1. Inicializar R y el área
     if (rInput) {
         rInput.value = currentR;
