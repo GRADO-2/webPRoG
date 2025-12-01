@@ -1,5 +1,3 @@
-org\example\AreaChecker.class
 org\example\ControllerServlet.class
 org\example\utilities\VerifyHit.class
-org\example\utilities\Result.class
 org\example\utilities\PointResult.class
