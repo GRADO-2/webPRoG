@@ -1,35 +1,42 @@
 package org.example;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-import org.example.utilities.VerifyHit;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.example.utilities.PointResult;
+import org.example.utilities.VerifyHit;
+import org.example.beans.ResultsBean;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/areaCheckerS")
 public class AreaChecker extends HttpServlet {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy");
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         processRequest(req, resp);
     }
 
-    protected void processRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         long time_start = System.nanoTime();
 
         if ("true".equals(req.getParameter("clear_history"))) {
             HttpSession session = req.getSession(false);
             if (session != null) {
-                session.removeAttribute("history");
+                ResultsBean resultsBean = (ResultsBean) session.getAttribute("resultsBean");
+                if (resultsBean != null) {
+                    resultsBean.clearResults();
+                }
             }
 
             resp.sendRedirect(req.getContextPath() + "/controllerS");
@@ -42,7 +49,16 @@ public class AreaChecker extends HttpServlet {
         String fromGraph = req.getParameter("from_graph"); // Check if request is from graph
 
         try {
-            if (xParam == null || yParam == null || rParam == null || xParam.isEmpty() || yParam.isEmpty() || rParam.isEmpty()) {
+            // Sanitize inputs: replace commas with dots
+            if (xParam != null)
+                xParam = xParam.replace(',', '.');
+            if (yParam != null)
+                yParam = yParam.replace(',', '.');
+            if (rParam != null)
+                rParam = rParam.replace(',', '.');
+
+            if (xParam == null || yParam == null || rParam == null || xParam.isEmpty() || yParam.isEmpty()
+                    || rParam.isEmpty()) {
                 throw new IllegalArgumentException("Missing coordinates (X, Y, R).");
             }
 
@@ -51,12 +67,11 @@ public class AreaChecker extends HttpServlet {
             BigDecimal r = new BigDecimal(rParam);
 
             VerifyHit verifyHit = new VerifyHit();
-            
-            // Skip validation if request comes from graph click
-            if (!"true".equals(fromGraph)) {
+
+            if (fromGraph == null || !fromGraph.trim().equalsIgnoreCase("true")) {
                 verifyHit.validate(x, y, r);
             }
-            
+
             long time_end = System.nanoTime();
             String execTime = String.format("%.3f", (time_end - time_start) / 1_000_000.0);
             boolean hit = verifyHit.pointchecker(x, y, r);
@@ -69,26 +84,24 @@ public class AreaChecker extends HttpServlet {
             req.setAttribute("date", LocalDateTime.now().format(DATE_FORMATTER));
             req.setAttribute("execTime", execTime);
 
-            // Create PointResult and store in session
-            org.example.utilities.PointResult pointResult = new org.example.utilities.PointResult(
+            // Create PointResult and store in session via ResultsBean
+            PointResult pointResult = new PointResult(
                     x.toString(),
                     y.toString(),
                     r.toString(),
                     hit,
                     LocalDateTime.now().format(DATE_FORMATTER),
-                    (time_end - time_start) / 1_000_000.0
-            );
+                    (time_end - time_start) / 1_000_000.0);
 
             HttpSession session = req.getSession(true);
-            java.util.List<org.example.utilities.PointResult> history =
-                    (java.util.List<org.example.utilities.PointResult>) session.getAttribute("history");
+            ResultsBean resultsBean = (ResultsBean) session.getAttribute("resultsBean");
 
-            if (history == null) {
-                history = new java.util.ArrayList<>();
+            if (resultsBean == null) {
+                resultsBean = new ResultsBean();
+                session.setAttribute("resultsBean", resultsBean);
             }
 
-            history.add(pointResult);
-            session.setAttribute("history", history);
+            resultsBean.addResult(pointResult);
 
             req.getRequestDispatcher("/result.jsp").forward(req, resp);
 

@@ -1,227 +1,312 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+    <% response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate" );
+        response.setHeader("Pragma", "no-cache" ); response.setDateHeader("Expires", 0); String xStr=(String)
+        request.getAttribute("x"); String yStr=(String) request.getAttribute("y"); String rStr=(String)
+        request.getAttribute("r"); String hitResult=(String) request.getAttribute("hit"); String errorMessage=(String)
+        request.getAttribute("error_message"); %>
 
-<%
-    // Prevent caching to avoid page reload when going back
-    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    response.setHeader("Pragma", "no-cache");
-    response.setDateHeader("Expires", 0);
-%>
+        <!DOCTYPE html>
+        <html data-theme="dark">
 
-<html>
-<head>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Result</title>
-    <link rel="stylesheet" type="text/css" href="css/result.css">
-</head>
-<body>
+        <head>
+            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+            <meta http-equiv="Pragma" content="no-cache">
+            <meta http-equiv="Expires" content="0">
+            <title>Result</title>
 
-<%
-    // Captura el mensaje de error si existe para la lógica condicional
-    String errorMessage = (String) request.getAttribute("error_message");
-%>
+            <style>
+                body {
+                    font-family: sans-serif;
+                    background-color: #1e293b;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    min-height: 100vh;
+                    margin: 0;
+                    padding: 20px;
+                }
 
-<div style="display: flex; justify-content: space-between;">
-    <div style="flex: 1;">
-        <h2>Resultados de la Verificación de Área</h2>
-    </div>
-    <div style="flex: 1; text-align: center;">
-        <svg id="miSVG" width="300" height="300" viewBox="-150 -150 300 300">
-            <!-- Axes -->
-            <line x1="-150" y1="0" x2="150" y2="0" stroke="black" stroke-width="1"/>
-            <line x1="0" y1="-150" x2="0" y2="150" stroke="black" stroke-width="1"/>
+                .container {
+                    background: #334155;
+                    padding: 2rem;
+                    border-radius: 10px;
+                    margin-top: 20px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                    max-width: 800px;
+                    width: 100%;
+                }
 
-            <!-- Axis labels -->
-            <text x="140" y="15" font-size="12" fill="black">X</text>
-            <text x="5" y="-140" font-size="12" fill="black">Y</text>
+                .result-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
 
-            <!-- Quadrant labels and boundaries -->
-            <!-- R boundaries - dynamically positioned based on current R value -->
-            <g id="rLabels">
-                <!-- Horizontal R labels -->
-                <text x="75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-75" y="-5" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-75" y="15" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <!-- Vertical R labels -->
-                <text x="5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-5" y="75" font-size="10" fill="blue" text-anchor="middle">R</text>
-                <text x="-5" y="-75" font-size="10" fill="blue" text-anchor="middle">R</text>
-            </g>
+                .result-table th,
+                .result-table td {
+                    border: 1px solid #475569;
+                    padding: 12px;
+                    text-align: left;
+                }
 
-            <!-- R/2 boundaries -->
-            <g id="r2Labels">
-                <!-- Horizontal R/2 labels -->
-                <text x="37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-37.5" y="-5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-37.5" y="15" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <!-- Vertical R/2 labels -->
-                <text x="5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-5" y="37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-                <text x="-5" y="-37.5" font-size="10" fill="red" text-anchor="middle">R/2</text>
-            </g>
+                .result-table th {
+                    background: #1e293b;
+                    font-weight: 600;
+                }
 
-            <!-- Grid lines at R and R/2 positions -->
-            <!-- For R=5: lines at ±5 and ±2.5 (R/2) -->
-            <!-- Horizontal lines -->
-            <line x1="-150" y1="75" x2="150" y2="75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="-75" x2="150" y2="-75" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="37.5" x2="150" y2="37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-150" y1="-37.5" x2="150" y2="-37.5" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                .button {
+                    display: inline-block;
+                    background-color: #3b82f6;
+                    color: white;
+                    padding: 10px 20px;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-top: 15px;
+                    transition: all 0.2s;
+                }
 
-            <!-- Vertical lines -->
-            <line x1="75" y1="-150" x2="75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-75" y1="-150" x2="-75" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="37.5" y1="-150" x2="37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
-            <line x1="-37.5" y1="-150" x2="-37.5" y2="150" stroke="#ccc" stroke-dasharray="2,2" stroke-width="0.5"/>
+                .button:hover {
+                    background-color: #2563eb;
+                    transform: translateY(-2px);
+                }
 
-            <!-- Area shapes will be drawn here -->
-            <g id="areaGroup">
-                <% if (errorMessage == null) {
-                    String r = (String) request.getAttribute("r");
-                    if (r != null) {
-                        double rVal = Double.parseDouble(r);
-                        double s = 30; // scale
+                .error-box {
+                    background-color: #ef4444;
+                    color: white;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin-bottom: 15px;
+                }
 
-                        // Rectángulo: x ≥ 0, y ≤ 0, ancho = r, alto = r/2
-                        String rect = "<rect class=\"area\" x=\"0\" y=\"0\" width=\""+(s * rVal)+"\" height=\""+(s * (rVal / 2))+"\" transform=\"translate(0, "+(-s * (rVal / 2))+")\"/>";
+                .svg-container {
+                    text-align: center;
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: #0f172a;
+                    border-radius: 8px;
+                }
 
-                        // Triángulo: x ≤ 0, y ≥ 0, y ≤ r + 2x. Vértices: (-r/2, 0), (0, 0), (0, r)
-                        // En coordenadas SVG (Y invertida): (-r/2, 0), (0, 0), (0, -r)
-                        String tri = "<polygon class=\"area\" points=\""+(-s * (rVal / 2))+",0 0,0 0,"+(-s * rVal)+"\"/>";
+                h2 {
+                    color: #3b82f6;
+                    margin-bottom: 20px;
+                }
 
-                        // Sector circular: x ≤ 0, y ≤ 0, x² + y² ≤ (r/2)² (cuarto de círculo en cuadrante 3)
-                        double radius = s * (rVal / 2);
-                        String arc = "<path class=\"area\" d=\"M "+(-radius)+",0 A "+radius+","+radius+" 0 0,1 0,"+(-radius)+" L 0,0 Z\"/>";
+                #coordsPloter {
+                    position: fixed;
+                    display: none;
+                    background: rgba(0, 0, 0, 0.8);
+                    color: white;
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                    font-size: 12px;
+                    pointer-events: none;
+                    z-index: 1000;
+                }
+            </style>
+        </head>
 
-                        out.print(rect + tri + arc);
-                    }
-                } %>
-            </g>
-            <g id="pointsGroup"></g>
+        <body>
 
-            <!-- Draw all historical points using scrip.js functions -->
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Usar la misma lógica de renderizado de scrip.js
-                    renderHistoryFromStorage();
-                });
+            <div class="container">
+                <h2>Result</h2>
 
-                // Función para renderizar puntos desde almacenamiento
-                function renderHistoryFromStorage() {
-                    const pointsGroup = document.getElementById('pointsGroup');
-                    if (pointsGroup) {
-                        pointsGroup.innerHTML = '';
+                <div class="svg-container">
+                    <svg id="miSVG" width="300" height="300" viewBox="-210 -210 420 420">
 
-                        // Intenta obtener datos de sessionStorage, si no de localStorage
-                        let histData = sessionStorage.getItem('histData');
-                        if (!histData) {
-                            histData = localStorage.getItem('histData');
-                        }
+                        <!-- Axes -->
+                        <line x1="-210" y1="0" x2="210" y2="0" stroke="#e0d6f0" stroke-width="1" />
+                        <line x1="0" y1="-210" x2="0" y2="210" stroke="#e0d6f0" stroke-width="1" />
 
-                        if (histData) {
-                            const history = JSON.parse(histData);
-                            const scale = 30; // 30px por unidad
+                        <!-- Numeric grid lines for 1,2,3,4,5,6 -->
+                        <line x1="-210" y1="-30" x2="210" y2="-30" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="-60" x2="210" y2="-60" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="-90" x2="210" y2="-90" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="-120" x2="210" y2="-120" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="-150" x2="210" y2="-150" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="-180" x2="210" y2="-180" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="30" x2="210" y2="30" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="60" x2="210" y2="60" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="90" x2="210" y2="90" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="120" x2="210" y2="120" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="150" x2="210" y2="150" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="-210" y1="180" x2="210" y2="180" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="30" y1="-210" x2="30" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="60" y1="-210" x2="60" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="90" y1="-210" x2="90" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="120" y1="-210" x2="120" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="150" y1="-210" x2="150" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <line x1="180" y1="-210" x2="180" y2="210" stroke="#4a5568" stroke-dasharray="3,3"
+                            stroke-width="0.5" />
+                        <rect x="5" y="8" width="10" height="10" fill="#a060f0" />
+                        <text x="18" y="16" font-size="9" fill="#a060f0" text-anchor="start">R</text>
+                        <rect x="5" y="21" width="10" height="10" fill="#ff6b9d" />
+                        <text x="18" y="29" font-size="9" fill="#ff6b9d" text-anchor="start">R/2</text>
+                        </g>
 
-                            history.forEach(function(item) {
-                                const dot = item.dot;
-                                const ans = item.ans;
+                        <% if (rStr !=null && errorMessage==null) { try { double rVal=Double.parseDouble(rStr); double
+                            s=30.0; double radius=rVal * s; double halfRadius=radius / 2.0; %>
+                            <!-- R grid lines -->
+                            <line x1="-210" y1="<%= radius %>" x2="210" y2="<%= radius %>" stroke="#a060f0"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="-210" y1="<%= -radius %>" x2="210" y2="<%= -radius %>" stroke="#a060f0"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="<%= radius %>" y1="-210" x2="<%= radius %>" y2="210" stroke="#a060f0"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="<%= -radius %>" y1="-210" x2="<%= -radius %>" y2="210" stroke="#a060f0"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
 
-                                const xVal = parseFloat(dot.x);
-                                const yVal = parseFloat(dot.y);
-                                const cx = xVal * scale;
-                                const cy = -yVal * scale; // Y está invertido en SVG
-                                const color = ans.result === 'IN' ? 'green' : 'red';
+                            <!-- R/2 grid lines -->
+                            <line x1="-210" y1="<%= halfRadius %>" x2="210" y2="<%= halfRadius %>" stroke="#ff6b9d"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="-210" y1="<%= -halfRadius %>" x2="210" y2="<%= -halfRadius %>" stroke="#ff6b9d"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="<%= halfRadius %>" y1="-210" x2="<%= halfRadius %>" y2="210" stroke="#ff6b9d"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
+                            <line x1="<%= -halfRadius %>" y1="-210" x2="<%= -halfRadius %>" y2="210" stroke="#ff6b9d"
+                                stroke-dasharray="2,2" stroke-width="0.5" />
 
-                                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                                circle.setAttribute('cx', cx);
-                                circle.setAttribute('cy', cy);
-                                circle.setAttribute('r', 4);
-                                circle.setAttribute('fill', color);
-                                circle.setAttribute('stroke', 'black');
-                                circle.setAttribute('stroke-width', '0.5');
+                            <!-- Area shapes -->
+                            <path d="M 0 0 L<%= radius %> 0 A <%= radius %> <%= radius %> 0 0 0 0 <%= -radius %> Z"
+                                fill="#3b82f6" fill-opacity="0.5" stroke="#3b82f6" />
+                            <polygon points="0,0 <%= -halfRadius %>,0 0,<%= -radius %>" fill="#3b82f6"
+                                fill-opacity="0.5" stroke="#3b82f6" />
+                            <rect x="<%= -radius %>" y="0" width="<%= radius %>" height="<%= halfRadius %>"
+                                fill="#3b82f6" fill-opacity="0.5" stroke="#3b82f6" />
+                            <% } catch (Exception e) { } } %>
 
-                                pointsGroup.appendChild(circle);
+                                <% if (xStr !=null && yStr !=null) { try { double xVal=Double.parseDouble(xStr); double
+                                    yVal=Double.parseDouble(yStr); double scale=30.0; double cx=xVal * scale; double
+                                    cy=-yVal * scale; String color=(hitResult !=null && hitResult.equals("IN"))
+                                    ? "#10b981" : "#ef4444" ; %>
+                                    <circle cx="<%= cx %>" cy="<%= cy %>" r="4" fill="<%= color %>" stroke="#fff"
+                                        stroke-width="1" />
+                                    <% } catch (Exception e) { } } %>
+
+                    </svg>
+                </div>
+
+                <% if (errorMessage !=null) { %>
+                    <div class="error-box">
+                        <h3>Processing Failed!</h3>
+                        <p>⚠️ <%= errorMessage %>
+                        </p>
+                    </div>
+                    <% } %>
+
+                        <table class="result-table">
+                            <tr>
+                                <th>X Coordinate</th>
+                                <td>
+                                    <%= xStr !=null ? xStr : "N/A" %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Y Coordinate</th>
+                                <td>
+                                    <%= yStr !=null ? yStr : "N/A" %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>R Parameter</th>
+                                <td>
+                                    <%= rStr !=null ? rStr : "N/A" %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Result</th>
+                                <td>
+                                    <%= hitResult !=null ? hitResult : "N/A" %>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Execution Time</th>
+                                <td>
+                                    <%= request.getAttribute("execTime") !=null ? request.getAttribute("execTime")
+                                        + " ms" : "N/A" %>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div id="coordsPloter"></div>
+
+                        <script>
+                            // Add tooltip functionality to result SVG
+                            const svg = document.getElementById('miSVG');
+                            const coordsPloter = document.getElementById('coordsPloter');
+
+                            svg.addEventListener('mousemove', function (e) {
+                                const svgRect = svg.getBoundingClientRect();
+                                // Updated for -7 to 7 range: total coordinate range is 14, viewBox width is 420
+                                const svgX = ((e.clientX - svgRect.left - svgRect.width / 2) * 14 / svgRect.width).toFixed(2);
+                                const svgY = (-(e.clientY - svgRect.top - svgRect.height / 2) * 14 / svgRect.height).toFixed(2);
+
+                                coordsPloter.textContent = `X: ${svgX}, Y: ${svgY}`;
+                                coordsPloter.style.display = 'block';
+                                coordsPloter.style.left = (e.clientX + 15) + 'px';
+                                coordsPloter.style.top = (e.clientY + 15) + 'px';
                             });
-                        }
-                    }
-                }
-            </script>
 
-            <!-- Draw the result point -->
-            <% if (errorMessage == null) {
-                String x = (String) request.getAttribute("x");
-                String y = (String) request.getAttribute("y");
-                String r = (String) request.getAttribute("r");
-                if (x != null && y != null && r != null) {
-                    double xVal = Double.parseDouble(x);
-                    double yVal = Double.parseDouble(y);
-                    double rVal = Double.parseDouble(r);
-                    double scale = 30; // 30px per unit
-                    double cx = xVal * scale;
-                    double cy = -yVal * scale; // Y is inverted in SVG
-                    String hitResult = (String) request.getAttribute("hit");
-                    String color = "IN".equals(hitResult) ? "green" : "red";
-            %>
-                <circle cx="<%= cx %>" cy="<%= cy %>" r="4" fill="<%= color %>" stroke="black" stroke-width="0.5"/>
-            <%
-                }
-            } %>
-        </svg>
-    </div>
-</div>
+                            svg.addEventListener('mouseleave', function () {
+                                coordsPloter.style.display = 'none';
+                            });
 
-<% if (errorMessage != null) { %>
-    <div class="error-box">
-        <h3>Processing Failed!</h3>
-        <p>⚠️ <%= errorMessage %></p>
-    </div>
-<% } %>
+                            // Format number function
+                            function formatNumber(value) {
+                                try {
+                                    const num = parseFloat(value);
+                                    const str = String(value);
+                                    const parts = str.split('.');
+                                    if (parts.length > 1 && parts[1].length > 5) {
+                                        return num.toExponential(2);
+                                    }
+                                    if (Math.abs(num) >= 100000 || (Math.abs(num) < 0.00001 && num !== 0)) {
+                                        return num.toExponential(2);
+                                    }
+                                    return value;
+                                } catch (e) {
+                                    return value;
+                                }
+                            }
 
-<table>
-    <tr><th>X Coordinate</th><td><%= request.getAttribute("x") %></td></tr>
-    <tr><th>Y Coordinate</th><td><%= request.getAttribute("y") %></td></tr>
-    <tr><th>R Parameter</th><td><%= request.getAttribute("r") %></td></tr>
+                            // Format displayed values in table
+                            const xCell = document.querySelector('.result-table tr:nth-child(1) td');
+                            const yCell = document.querySelector('.result-table tr:nth-child(2) td');
+                            const rCell = document.querySelector('.result-table tr:nth-child(3) td');
 
-    <tr><th>Hit Result</th>
-        <td>
-            <% if (errorMessage != null) { %>
-                <span style="color: #ff4757;">FAILED/N/A</span>
-            <% } else {
-                String hitResult = (String) request.getAttribute("hit");
-                String color = "IN".equals(hitResult) ? "#50fa7b" : "#ffb86c";
-            %>
-                <span style="color: <%= color %>; font-weight: 700;"><%= hitResult %></span>
-            <% } %>
-        </td>
-    </tr>
+                            if (xCell && xCell.textContent.trim() !== 'N/A') {
+                                xCell.textContent = formatNumber(xCell.textContent.trim());
+                            }
+                            if (yCell && yCell.textContent.trim() !== 'N/A') {
+                                yCell.textContent = formatNumber(yCell.textContent.trim());
+                            }
+                            if (rCell && rCell.textContent.trim() !== 'N/A') {
+                                rCell.textContent = formatNumber(rCell.textContent.trim());
+                            }
+                        </script>
 
-    <tr><th>Attempt Date</th>
-        <td>
-            <%
-                String date = (String) request.getAttribute("date");
-                out.print(date == null ? "N/A" : date);
-            %>
-        </td>
-    </tr>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <a href="index.jsp" class="button">Go Back</a>
+                        </div>
+            </div>
 
-    <tr><th>Execution Time</th>
-        <td>
-            <%
-                String execTime = (String) request.getAttribute("execTime");
-                out.print(execTime == null ? "N/A" : execTime + " ms");
-            %>
-        </td>
-    </tr>
-</table>
+        </body>
 
-<br>
-<a href="controllerS">Back to form</a>
-
-<script src="./scrip.js"></script>
-</body>
-</html>
+        </html>

@@ -45,5 +45,35 @@ public class PointResult {
         return executionTime;
     }
 
+    // Format numbers: use scientific notation if more than 5 decimal places or very large/small
+    private String formatNumber(String value) {
+        try {
+            double num = Double.parseDouble(value);
+            // Count decimal places
+            String[] parts = value.split("\\.");
+            if (parts.length > 1 && parts[1].length() > 5) {
+                return String.format("%.2e", num);
+            }
+            // Use scientific notation for very large or very small numbers
+            if (Math.abs(num) >= 100000 || (Math.abs(num) < 0.00001 && num != 0)) {
+                return String.format("%.2e", num);
+            }
+            return value;
+        } catch (NumberFormatException e) {
+            return value;
+        }
+    }
+
+    public String getFormattedX() {
+        return formatNumber(x);
+    }
+
+    public String getFormattedY() {
+        return formatNumber(y);
+    }
+
+    public String getFormattedR() {
+        return formatNumber(r);
+    }
 
 }
