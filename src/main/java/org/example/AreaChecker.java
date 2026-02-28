@@ -63,6 +63,26 @@ public class AreaChecker extends HttpServlet {
             req.setAttribute("date", LocalDateTime.now().format(DATE_FORMATTER));
             req.setAttribute("execTime", execTime);
 
+            // Create PointResult and store in session
+            org.example.utilities.PointResult pointResult = new org.example.utilities.PointResult(
+                    x.toString(),
+                    y.toString(),
+                    r.toString(),
+                    hit,
+                    LocalDateTime.now().format(DATE_FORMATTER),
+                    (time_end - time_start) / 1_000_000.0
+            );
+
+            HttpSession session = req.getSession(true);
+            java.util.List<org.example.utilities.PointResult> history =
+                    (java.util.List<org.example.utilities.PointResult>) session.getAttribute("history");
+
+            if (history == null) {
+                history = new java.util.ArrayList<>();
+            }
+
+            history.add(pointResult);
+            session.setAttribute("history", history);
 
             req.getRequestDispatcher("/result.jsp").forward(req, resp);
 
